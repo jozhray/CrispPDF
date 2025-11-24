@@ -79,6 +79,7 @@ export async function savePDF(file: File, elements: PDFElement[]): Promise<Uint8
                 height: element.height,
                 borderColor: hexToRgb(element.strokeColor || '#000000'),
                 borderWidth: element.strokeWidth || 1,
+                color: element.fillColor && element.fillColor !== 'transparent' ? hexToRgb(element.fillColor) : undefined,
             });
         } else if (element.type === 'circle') {
             page.drawEllipse({
@@ -88,6 +89,7 @@ export async function savePDF(file: File, elements: PDFElement[]): Promise<Uint8
                 yScale: element.height / 2,
                 borderColor: hexToRgb(element.strokeColor || '#000000'),
                 borderWidth: element.strokeWidth || 1,
+                color: element.fillColor && element.fillColor !== 'transparent' ? hexToRgb(element.fillColor) : undefined,
             });
         } else if (element.type === 'line' && element.points) {
             page.drawLine({
