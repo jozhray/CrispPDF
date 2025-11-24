@@ -118,7 +118,7 @@ export function PDFEditor() {
             const modifiedPdfBytes = await savePDF(file, elements);
             console.log('PDF saved, bytes:', modifiedPdfBytes.length);
 
-            const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
+            const blob = new Blob([modifiedPdfBytes as BlobPart], { type: 'application/pdf' });
             console.log('Blob created:', blob.size, 'bytes');
 
             const url = URL.createObjectURL(blob);

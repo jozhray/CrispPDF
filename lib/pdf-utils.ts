@@ -16,11 +16,12 @@ export function blobToURL(blob: Blob): string {
 
 function hexToRgb(hex: string) {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
+    const values = result ? {
         r: parseInt(result[1], 16) / 255,
         g: parseInt(result[2], 16) / 255,
         b: parseInt(result[3], 16) / 255
     } : { r: 0, g: 0, b: 0 };
+    return rgb(values.r, values.g, values.b);
 }
 
 export async function savePDF(file: File, elements: PDFElement[]): Promise<Uint8Array> {
@@ -55,14 +56,12 @@ export async function savePDF(file: File, elements: PDFElement[]): Promise<Uint8
                 font = helveticaOblique;
             }
 
-            const { r, g, b } = hexToRgb(element.color || '#000000');
-
             page.drawText(element.content || '', {
                 x: pdfX,
                 y: pdfY,
                 size: element.fontSize || 16,
                 font: font,
-                color: rgb(r, g, b),
+                color: hexToRgb(element.color || '#000000'),
             });
         } else if (element.type === 'signature' && element.content) {
             const pngImage = await pdfDoc.embedPng(element.content);
@@ -80,7 +79,6 @@ export async function savePDF(file: File, elements: PDFElement[]): Promise<Uint8
                 height: element.height,
                 borderColor: hexToRgb(element.strokeColor || '#000000'),
                 borderWidth: element.strokeWidth || 1,
-                // color: element.fillColor !== 'transparent' ? hexToRgb(element.fillColor || '#000000') : undefined, // Fill not fully supported in UI yet
             });
         } else if (element.type === 'circle') {
             page.drawEllipse({
