@@ -70,6 +70,48 @@ export function DraggableElement({
         document.addEventListener('mouseup', handleMouseUp);
     };
 
+    const handleTouchStart = (e: React.TouchEvent) => {
+        if (isEditing || isResizing) return;
+        // Prevent default to stop scrolling while dragging
+        // e.preventDefault(); // Commented out to allow scrolling if not dragging, but we might need it.
+        // Better to stop propagation
+        e.stopPropagation();
+
+        const touch = e.touches[0];
+        const startX = touch.clientX;
+        const startY = touch.clientY;
+        const startLeft = element.x;
+        const startTop = element.y;
+        draggedRef.current = false;
+
+        const handleTouchMove = (moveEvent: TouchEvent) => {
+            moveEvent.preventDefault(); // Prevent scrolling while dragging
+            const moveTouch = moveEvent.touches[0];
+            const dx = (moveTouch.clientX - startX) / scale;
+            const dy = (moveTouch.clientY - startY) / scale;
+
+            if (Math.abs(moveTouch.clientX - startX) > 5 || Math.abs(moveTouch.clientY - startY) > 5) {
+                draggedRef.current = true;
+            }
+
+            onUpdate(element.id, {
+                x: startLeft + dx,
+                y: startTop + dy,
+            });
+        };
+
+        const handleTouchEnd = () => {
+            document.removeEventListener('touchmove', handleTouchMove);
+            document.removeEventListener('touchend', handleTouchEnd);
+            setTimeout(() => {
+                draggedRef.current = false;
+            }, 100);
+        };
+
+        document.addEventListener('touchmove', handleTouchMove, { passive: false });
+        document.addEventListener('touchend', handleTouchEnd);
+    };
+
     const handleResizeMouseDown = (e: React.MouseEvent) => {
         const resizableTypes = ['signature', 'rect', 'circle', 'triangle', 'arrow', 'diamond', 'pentagon', 'hexagon', 'star', 'heart'];
         if (!resizableTypes.includes(element.type)) return;
@@ -107,6 +149,47 @@ export function DraggableElement({
 
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
+    };
+
+    const handleResizeTouchStart = (e: React.TouchEvent) => {
+        const resizableTypes = ['signature', 'rect', 'circle', 'triangle', 'arrow', 'diamond', 'pentagon', 'hexagon', 'star', 'heart'];
+        if (!resizableTypes.includes(element.type)) return;
+
+        e.stopPropagation();
+        // e.preventDefault(); // Prevent default to stop scrolling
+        setIsResizing(true);
+        draggedRef.current = true;
+
+        const touch = e.touches[0];
+        const startX = touch.clientX;
+        const startWidth = element.width || 200;
+        const startHeight = element.height || 50;
+        const aspectRatio = startWidth / startHeight;
+
+        const handleTouchMove = (moveEvent: TouchEvent) => {
+            moveEvent.preventDefault(); // Prevent scrolling while resizing
+            const moveTouch = moveEvent.touches[0];
+            const dx = (moveTouch.clientX - startX) / scale;
+            const newWidth = Math.max(50, startWidth + dx);
+            const newHeight = newWidth / aspectRatio;
+
+            onUpdate(element.id, {
+                width: newWidth,
+                height: newHeight,
+            });
+        };
+
+        const handleTouchEnd = () => {
+            setIsResizing(false);
+            document.removeEventListener('touchmove', handleTouchMove);
+            document.removeEventListener('touchend', handleTouchEnd);
+            setTimeout(() => {
+                draggedRef.current = false;
+            }, 100);
+        };
+
+        document.addEventListener('touchmove', handleTouchMove, { passive: false });
+        document.addEventListener('touchend', handleTouchEnd);
     };
 
     const handleDoubleClick = (e: React.MouseEvent) => {
@@ -174,6 +257,7 @@ export function DraggableElement({
             ref={elementRef}
             style={style}
             onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
             onDoubleClick={handleDoubleClick}
             onClick={handleClick}
             onMouseEnter={() => setIsHovered(true)}
@@ -252,6 +336,7 @@ export function DraggableElement({
                             {isHovered && (
                                 <div
                                     onMouseDown={handleResizeMouseDown}
+                                    onTouchStart={handleResizeTouchStart}
                                     className="absolute bottom-0 right-0 w-4 h-4 bg-blue-500 rounded-full cursor-nwse-resize hover:bg-blue-600"
                                     style={{ zIndex: 101 }}
                                 />
@@ -325,6 +410,7 @@ export function DraggableElement({
                     {isHovered && canResize && (
                         <div
                             onMouseDown={handleResizeMouseDown}
+                            onTouchStart={handleResizeTouchStart}
                             className="absolute bottom-0 right-0 w-4 h-4 bg-blue-500 rounded-full cursor-nwse-resize hover:bg-blue-600"
                             style={{ zIndex: 101 }}
                         />
@@ -346,6 +432,7 @@ export function DraggableElement({
                     {isHovered && canResize && (
                         <div
                             onMouseDown={handleResizeMouseDown}
+                            onTouchStart={handleResizeTouchStart}
                             className="absolute bottom-0 right-0 w-4 h-4 bg-blue-500 rounded-full cursor-nwse-resize hover:bg-blue-600"
                             style={{ zIndex: 101 }}
                         />
@@ -425,6 +512,7 @@ export function DraggableElement({
                     {isHovered && canResize && (
                         <div
                             onMouseDown={handleResizeMouseDown}
+                            onTouchStart={handleResizeTouchStart}
                             className="absolute bottom-0 right-0 w-4 h-4 bg-blue-500 rounded-full cursor-nwse-resize hover:bg-blue-600"
                             style={{ zIndex: 101 }}
                         />
