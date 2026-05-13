@@ -146,29 +146,9 @@ export function PDFEditor() {
     };
 
     return (
-        <div className="flex flex-col h-screen w-full bg-gray-50">
-            <header className="flex items-center justify-between px-6 py-4 bg-white border-b shadow-sm z-20">
-                <h1 className="text-xl font-bold text-gray-800">CrispPDF</h1>
-                <div className="flex gap-2">
-                    {file && (
-                        <button
-                            onClick={() => {
-                                setFile(null);
-                                setElements([]);
-                                setSelectedElementId(null);
-                                setActiveTool(null);
-                                setIsEraserActive(false);
-                            }}
-                            className="text-sm text-red-600 hover:text-red-700 font-medium px-3 py-1 border border-red-200 rounded"
-                        >
-                            Reset
-                        </button>
-                    )}
-                </div>
-            </header>
+        <div className="flex flex-col h-full w-full bg-transparent">
 
             <main className="flex-1 overflow-hidden relative flex flex-col" style={{
-                backgroundImage: !file ? 'url(/pdf-bg.png)' : undefined,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat'
@@ -197,7 +177,7 @@ export function PDFEditor() {
                             onEraserToggle={() => setIsEraserActive(!isEraserActive)}
                             onSave={handleDownload}
                         />
-                        <div className="flex-1 relative bg-gray-100 overflow-hidden">
+                        <div className="flex-1 relative bg-black/5 backdrop-blur-[2px] overflow-hidden">
                             <PDFViewer
                                 file={file}
                                 elements={elements}

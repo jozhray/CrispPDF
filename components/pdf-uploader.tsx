@@ -48,24 +48,26 @@ export function PDFUploader({ onFileSelect }: PDFUploaderProps) {
 
     return (
         <div
-            className="relative flex flex-col items-center justify-center w-full h-96 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors overflow-hidden"
+            className="group relative flex flex-col items-center justify-center w-full h-96 border-2 border-dashed border-blue-200/50 rounded-3xl cursor-pointer bg-white/40 hover:bg-white/60 transition-all overflow-hidden backdrop-blur-md shadow-xl"
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onClick={() => { console.log('PDFUploader: container clicked'); document.getElementById('pdf-upload-input')?.click(); }}
         >
             {/* Background Image */}
             <div
-                className="absolute inset-0 bg-cover bg-center opacity-20"
+                className="absolute inset-0 bg-cover bg-center opacity-10 grayscale group-hover:grayscale-0 transition-all duration-700"
                 style={{ backgroundImage: 'url(/crisp-pdf-bg.jpg)' }}
             />
 
             {/* Content */}
-            <div className="relative flex flex-col items-center justify-center pt-5 pb-6 z-10">
-                <Upload className="w-10 h-10 mb-3 text-gray-400" />
-                <p className="mb-2 text-sm text-gray-500">
-                    <span className="font-semibold">Click to upload</span> or drag and drop
+            <div className="relative flex flex-col items-center justify-center pt-5 pb-6 z-10 text-center">
+                <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center shadow-lg mb-6 group-hover:scale-110 transition-transform">
+                    <Upload className="w-10 h-10 text-blue-600" />
+                </div>
+                <p className="mb-2 text-xl text-gray-900">
+                    <span className="font-black tracking-tight">Click to upload</span> or drag and drop
                 </p>
-                <p className="text-xs text-gray-500">PDF (MAX. 10MB)</p>
+                <p className="text-gray-500 font-medium">Standard PDF documents up to 10MB</p>
             </div>
             <input
                 id="pdf-upload-input"

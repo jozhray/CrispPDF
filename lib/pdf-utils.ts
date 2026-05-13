@@ -115,3 +115,33 @@ export async function savePDF(file: File, elements: PDFElement[]): Promise<Uint8
 
     return await pdfDoc.save();
 }
+
+export async function mergePDFs(entries: { file: File, pageIndices: number[] }[]): Promise<Uint8Array> {
+    const mergedPdf = await PDFDocument.create();
+    
+    for (const entry of entries) {
+        const arrayBuffer = await entry.file.arrayBuffer();
+        const pdf = await PDFDocument.load(arrayBuffer);
+        const copiedPages = await mergedPdf.copyPages(pdf, entry.pageIndices);
+        copiedPages.forEach((page) => mergedPdf.addPage(page));
+    }
+    
+    return await mergedPdf.save();
+}
+
+export async function splitPDF(file: File, pageIndices: number[]): Promise<Uint8Array> {
+    const arrayBuffer = await file.arrayBuffer();
+    const sourcePdf = await PDFDocument.load(arrayBuffer);
+    const newPdf = await PDFDocument.create();
+    
+    const copiedPages = await newPdf.copyPages(sourcePdf, pageIndices);
+    copiedPages.forEach((page) => newPdf.addPage(page));
+    
+    return await newPdf.save();
+}
+
+export async function getPageCount(file: File): Promise<number> {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await PDFDocument.load(arrayBuffer);
+    return pdf.getPageCount();
+}
