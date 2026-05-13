@@ -35,7 +35,7 @@ export function PDFSplitter() {
         setIsSplitting(true);
         try {
             const pdfBytes = await splitPDF(file, selectedPages);
-            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const blob = new Blob([pdfBytes as any], { type: 'application/pdf' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
